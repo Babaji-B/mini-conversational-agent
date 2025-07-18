@@ -47,7 +47,7 @@ python agent.py
 
 ### Example Inputs
 
-* "Hi, I am Arjun"
+* "Hi, I am Babaji"
 * "What's the weather in Hyderabad?"
 * "Remind me to call mom at 7 PM"
 * "Tell me news about AI"
@@ -60,3 +60,28 @@ python agent.py
 ✅ Uses **local mock functions** (no external APIs).
 ✅ Uses **regex for intent detection** (no LLM yet).
 ✅ Modular and ready for LLM upgrades in `llm_intents.py` next.
+
+
+---
+
+## LLM Extension
+
+This project now also includes **Groq LLM-based intent detection** for advanced use:
+
+✅ Handles jokes and basic calculations directly via LLM  
+✅ Uses `llm_intents.py` for LLM-based parsing  
+✅ Uses `llm_agent.py` for CLI interaction with LLM support
+
+---
+
+## Updated Folder Structure
+
+```bash
+mini-conversational-agent/
+├── agent.py               # Main conversational CLI (regex-based)
+├── llm_agent.py           # LLM-powered CLI conversational agent
+└── modules/
+    ├── tools.py           # Mock tool functions
+    ├── intents.py         # Regex-based intent detection
+    ├── llm_intents.py     # LLM-based intent detection + direct LLM responses
+    └── memory.py          # Simple in-memory store

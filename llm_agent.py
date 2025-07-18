@@ -1,17 +1,16 @@
-# agent.py
+# LLM_agent.py
 """
-Main conversational loop for our agent.
-Accepts user input, identifies intent, extracts entities, calls tools, and manages memory.
-Supports multi-turn handling with last intent tracking.
+Conversational agent using LLM-based intent detection and direct handling for jokes/calculations.
 """
 
-from modules import tools, intents
+from modules import tools, llm_intents
 from modules.memory import Memory
 
 def main():
-    print("Agent: Hi! I am your mini assistant. How can I help you today?")
+    print("Agent: Hi! I am your LLM-powered assistant. How can I help you today?")
     memory = Memory()
-    last_intent = None  # For multi-turn context tracking
+
+    from modules import intents  # For regex-based entity extraction
 
     while True:
         user_input = input("\nYou: ")
@@ -20,40 +19,22 @@ def main():
             print("Agent: Goodbye! Have a nice day.")
             break
 
-        # Check for user name and store
+        # Extract user name if mentioned
         user_name = intents.extract_name(user_input)
         if user_name:
             memory.update("user_name", user_name)
             print(f"Agent: Hi {user_name}! How can I help you today?")
             continue
 
-        # Check if user is asking for their name
-        if intents.is_ask_name(user_input):
-            name = memory.get("user_name")
-            if name:
-                print(f"Agent: Your name is {name}!")
-            else:
-                print("Agent: I don't know your name yet. Can you please tell me?")
+        # Get LLM intent and possible direct response
+        intent, llm_response = llm_intents.parse_intent_llm(user_input)
+
+        # If LLM handled joke or calculation, print and skip structured flow
+        if llm_response:
+            print(f"Agent: {llm_response}")
             continue
 
-        # Multi-turn handling: if last intent was get_weather and user now gives city
-        if last_intent == "get_weather":
-            city = intents.extract_city(user_input)
-            if not city:
-                city = user_input.strip()  # Assume user typed only the city name
-            if city:
-                memory.update("user_city", city)
-                response = tools.get_weather(city)
-                print(f"Agent: {response}")
-                last_intent = None
-                
-            else:
-                print("Agent: I couldn't detect the city, could you please repeat?")
-            continue
-
-        # Identify intent
-        intent = intents.parse_intent(user_input)
-
+        # Structured handling for other intents
         if intent == "greeting":
             name = memory.get("user_name")
             if name:
@@ -73,7 +54,6 @@ def main():
                 print(f"Agent: {response}")
             else:
                 print("Agent: May I know which city you would like the weather update for?")
-                last_intent = "get_weather"  # Set context for next user input
 
         elif intent == "set_reminder":
             text, time = intents.extract_reminder(user_input)
@@ -87,8 +67,15 @@ def main():
             topic = intents.extract_topic(user_input)
             response = tools.get_news(topic)
             print(f"Agent: {response}")
-        
-        elif intents.is_ask_city(user_input):
+
+        elif intent == "ask_name":
+            name = memory.get("user_name")
+            if name:
+                print(f"Agent: Your name is {name}.")
+            else:
+                print("Agent: I don't know your name yet. Could you please tell me your name?")
+
+        elif intent == "ask_city":
             city = memory.get("user_city")
             if city:
                 print(f"Agent: Your city is {city}.")

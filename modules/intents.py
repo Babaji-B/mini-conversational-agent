@@ -85,3 +85,40 @@ def extract_topic(user_input):
     if match:
         return match.group(1).strip()
     return "general"
+
+
+
+def is_ask_name(user_input):
+    """
+    Checks if the user is asking for their stored name.
+    Returns True if detected, else False.
+    """
+    patterns = [
+        r"\bwhat\s+is\s+my\s+name\b",
+        r"\btell\s+me\s+my\s+name\b",
+        r"\bdo\s+you\s+know\s+my\s+name\b",
+        r"\bwho\s+am\s+i\b"
+    ]
+    for pattern in patterns:
+        if re.search(pattern, user_input, re.IGNORECASE):
+            return True
+    return False
+
+
+def is_ask_city(user_input):
+    """
+    Checks if the user is asking for their stored city.
+    Returns True if detected, else False.
+    """
+    patterns = [
+        r"\bwhat\s+is\s+my\s+city\b",
+        r"\btell\s+me\s+my\s+city\b",
+        r"\bdo\s+you\s+know\s+my\s+city\b",
+        r"\babout\s+my\s+city\b",
+        r"\bcan\s+you\s+tell\s+me\s+about\s+my\s+city\b"
+    ]
+    for pattern in patterns:
+        if re.search(pattern, user_input, re.IGNORECASE):
+            return True
+    return False
+
